@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="一个正在准备中的 MBTI 性格测试网站。" />
+    <title>MBTI 性格测试｜即将上线</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <nav aria-label="主导航">
+        <a class="brand" href="./" aria-label="MBTI 测试首页">
+          <span class="brand-mark" aria-hidden="true">M</span>
+          <span>MBTI 测试</span>
+        </a>
+        <span class="status"><span class="status-dot"></span>筹备中</span>
+      </nav>
+
+      <section class="hero">
+        <div class="eyebrow">DISCOVER YOURSELF</div>
+        <h1>更了解自己，<br /><span>从一次认真作答开始。</span></h1>
+        <p class="lead">
+          我们正在准备一套清晰、轻松的 MBTI 性格测试。题目与计分规则即将加入，欢迎稍后回来探索你的性格偏好。
+        </p>
+        <div class="actions">
+          <button type="button" disabled>测试即将开放</button>
+          <a href="#dimensions">了解四个维度 <span aria-hidden="true">→</span></a>
+        </div>
+      </section>
+
+      <section class="dimensions" id="dimensions" aria-label="MBTI 四个维度">
+        <article><strong>E / I</strong><span>能量来源</span><small>外向 · 内向</small></article>
+        <article><strong>S / N</strong><span>信息获取</span><small>实感 · 直觉</small></article>
+        <article><strong>T / F</strong><span>决策方式</span><small>思考 · 情感</small></article>
+        <article><strong>J / P</strong><span>生活态度</span><small>判断 · 感知</small></article>
+      </section>
+
+      <footer>
+        <span>© <span id="year"></span> MBTI 测试</span>
+        <span>这是非官方测试项目，仅供自我探索。</span>
+      </footer>
+    </main>
+    <script src="script.js"></script>
+  </body>
+</html>
