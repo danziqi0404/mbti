@@ -119,9 +119,23 @@
         <button class="primary-button full-button" type="submit">进入测试</button>
       </form>
     </dialog>
+    <dialog class="description-dialog" id="description-dialog" aria-labelledby="description-dialog-title">
+      <article class="description-card">
+        <header class="description-dialog-header">
+          <div>
+            <span class="description-type" id="description-dialog-type"></span>
+            <h2 id="description-dialog-title"></h2>
+            <p id="description-dialog-subtitle"></p>
+          </div>
+          <button class="dialog-close reset-button" id="description-dialog-close" type="button" aria-label="关闭解析">×</button>
+        </header>
+        <div class="description-dialog-body" id="description-dialog-body"></div>
+      </article>
+    </dialog>
     <div class="toast" id="toast" role="status" aria-live="polite"></div>
     <script src="cloudbase-config.js"></script>
     <script src="questions.js"></script>
+    <script src="descriptions.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

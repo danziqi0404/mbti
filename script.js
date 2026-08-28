@@ -1,25 +1,6 @@
 const QUESTIONS = window.MBTI_QUESTIONS;
 const SESSION_KEY = "mbti-test-session-v1";
 
-const TYPE_DESCRIPTIONS = {
-  ISTJ: "检查员：务实严谨、守规则、可靠稳重",
-  ISFJ: "守卫者：细心体贴、擅长照顾他人、踏实",
-  INFJ: "提倡者：洞察力强、理想主义、共情力强",
-  INTJ: "建筑师：战略思维、独立理性、目标感强",
-  ISTP: "手艺人：灵活冷静、擅长实操、随机应变",
-  ISFP: "探险家：温柔感性、热爱体验、不喜约束",
-  INFP: "调停者：理想敏感、重视内心价值观",
-  INTP: "逻辑学家：爱思辨、喜欢钻研理论",
-  ESTP: "企业家：外向果敢、行动力强、擅长应变",
-  ESFP: "表演者：热情活泼、乐于社交、享受当下",
-  ENFP: "竞选者：创意丰富、感染力强、热爱新鲜",
-  ENTP: "辩论家：脑洞大、喜欢思辨挑战",
-  ESTJ: "总经理：果断有条理、擅长组织管理",
-  ESFJ: "执政官：热心合群、擅长协调人际",
-  ENFJ: "主人公：擅长鼓舞他人、共情领导力强",
-  ENTJ: "指挥官：强势规划、目标导向、领导力突出"
-};
-
 const views = [...document.querySelectorAll(".view")];
 const progressTrack = document.querySelector(".progress-track");
 const nameDialog = document.querySelector("#name-dialog");
@@ -35,6 +16,11 @@ const adminDashboard = document.querySelector("#admin-dashboard");
 const adminLoginMessage = document.querySelector("#admin-login-message");
 const tableStatus = document.querySelector("#table-status");
 const resultsBody = document.querySelector("#results-body");
+const descriptionDialog = document.querySelector("#description-dialog");
+const descriptionDialogType = document.querySelector("#description-dialog-type");
+const descriptionDialogTitle = document.querySelector("#description-dialog-title");
+const descriptionDialogSubtitle = document.querySelector("#description-dialog-subtitle");
+const descriptionDialogBody = document.querySelector("#description-dialog-body");
 
 let participantName = "";
 let answers = Array(QUESTIONS.length).fill(null);
@@ -105,6 +91,14 @@ function bindEvents() {
   document.querySelector("#refresh-data").addEventListener("click", loadSubmissions);
   document.querySelector("#copy-csv").addEventListener("click", copyCsv);
   document.querySelector("#download-csv").addEventListener("click", downloadCsv);
+  document.querySelector("#description-dialog-close").addEventListener("click", () => descriptionDialog.close());
+  descriptionDialog.addEventListener("click", (event) => {
+    if (event.target === descriptionDialog) descriptionDialog.close();
+  });
+  resultsBody.addEventListener("click", (event) => {
+    const button = event.target.closest("[data-mbti-type]");
+    if (button) openDescription(button.dataset.mbtiType);
+  });
   window.addEventListener("hashchange", () => {
     if (window.location.hash === "#admin") showAdmin(false);
   });
@@ -399,16 +393,95 @@ function renderSubmissionTable() {
     [
       formatTimestamp(item.submittedAt),
       item.name || "",
-      item.result || "",
-      TYPE_DESCRIPTIONS[item.result] || "暂无解析"
+      item.result || ""
     ].forEach((value) => {
       const cell = document.createElement("td");
       cell.textContent = value;
       row.append(cell);
     });
+
+    const descriptionCell = document.createElement("td");
+    descriptionCell.className = "analysis-action-cell";
+    const descriptionButton = document.createElement("button");
+    descriptionButton.className = "description-button";
+    descriptionButton.type = "button";
+    descriptionButton.dataset.mbtiType = item.result || "";
+    descriptionButton.textContent = "查看解析";
+    descriptionButton.setAttribute("aria-label", `查看 ${item.result || "该类型"} 的详细解析`);
+    descriptionCell.append(descriptionButton);
+    row.append(descriptionCell);
     fragment.append(row);
   });
   resultsBody.append(fragment);
+}
+
+function openDescription(mbtiType) {
+  const description = window.MBTI_DESCRIPTIONS?.[mbtiType];
+  if (!description) {
+    showToast(`暂未找到 ${mbtiType || "该类型"} 的解析。`);
+    return;
+  }
+
+  descriptionDialogType.textContent = mbtiType;
+  descriptionDialogTitle.textContent = description.title;
+  descriptionDialogSubtitle.textContent = description.subtitle;
+  descriptionDialogBody.replaceChildren();
+
+  const fragment = document.createDocumentFragment();
+  description.blocks.forEach((block) => {
+    if (block.type === "heading") {
+      const heading = document.createElement(block.level === 1 ? "h3" : "h4");
+      heading.textContent = block.text;
+      fragment.append(heading);
+      return;
+    }
+    if (block.type === "table") {
+      fragment.append(renderDescriptionTable(block.rows));
+      return;
+    }
+    const paragraph = document.createElement("p");
+    paragraph.textContent = block.text;
+    fragment.append(paragraph);
+  });
+
+  descriptionDialogBody.append(fragment);
+  descriptionDialogBody.scrollTop = 0;
+  descriptionDialog.showModal();
+}
+
+function renderDescriptionTable(rows) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "description-table-wrap";
+  const table = document.createElement("table");
+  table.className = "description-content-table";
+  const [headerRow = [], ...bodyRows] = Array.isArray(rows) ? rows : [];
+
+  if (headerRow.length) {
+    const head = document.createElement("thead");
+    const row = document.createElement("tr");
+    headerRow.forEach((value) => {
+      const cell = document.createElement("th");
+      cell.scope = "col";
+      cell.textContent = value;
+      row.append(cell);
+    });
+    head.append(row);
+    table.append(head);
+  }
+
+  const body = document.createElement("tbody");
+  bodyRows.forEach((values) => {
+    const row = document.createElement("tr");
+    values.forEach((value) => {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.append(cell);
+    });
+    body.append(row);
+  });
+  table.append(body);
+  wrapper.append(table);
+  return wrapper;
 }
 
 function formatTimestamp(timestamp) {
@@ -424,12 +497,12 @@ function formatTimestamp(timestamp) {
 
 function buildCsv() {
   const rows = [
-    ["提交时间", "姓名", "结果", "对应解析"],
+    ["提交时间", "姓名", "结果", "解析标题"],
     ...submissionRows.map((item) => [
       formatTimestamp(item.submittedAt),
       item.name || "",
       item.result || "",
-      TYPE_DESCRIPTIONS[item.result] || "暂无解析"
+      window.MBTI_DESCRIPTIONS?.[item.result]?.title || "暂无解析"
     ])
   ];
   return rows.map((row) => row.map(csvCell).join(",")).join("\r\n");

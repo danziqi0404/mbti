@@ -7,7 +7,7 @@
 - 仅向参与者展示四字母 MBTI 结果
 - 使用腾讯云 CloudBase 保存姓名、结果与云端提交时间
 - 管理员固定密码由 CloudBase 云函数验证
-- 管理后台按时间倒序展示结果和类型解析
+- 管理后台按时间倒序展示结果，并可打开对应类型的完整解析卡片
 - 一键复制 CSV 或下载可由 Excel 直接打开的 CSV 文件
 
 ## 系统结构
@@ -28,6 +28,16 @@ python -m http.server 4173
 ```
 
 然后打开 `http://127.0.0.1:4173/`。
+
+## 解析文档
+
+16 种类型的完整解析以 [`doc`](./doc) 目录中的 DOCX 文件为内容源。修改文档后，安装 `python-docx` 并运行：
+
+```powershell
+python .\scripts\build-descriptions.py
+```
+
+脚本会校验 16 种类型是否齐全，并重新生成网页加载的 `descriptions.js`。请不要直接手工编辑生成文件。
 
 ## CloudBase 配置
 
