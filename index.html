@@ -3,47 +3,125 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="一个正在准备中的 MBTI 性格测试网站。" />
-    <title>MBTI 性格测试｜即将上线</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <meta name="description" content="90 题 MBTI 性格偏好测试，完成后即可查看并提交测试结果。" />
+    <title>MBTI 性格测试</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <main class="shell">
-      <nav aria-label="主导航">
-        <a class="brand" href="./" aria-label="MBTI 测试首页">
-          <span class="brand-mark" aria-hidden="true">M</span>
-          <span>MBTI 测试</span>
-        </a>
-        <span class="status"><span class="status-dot"></span>筹备中</span>
+    <header class="site-header">
+      <nav class="nav-shell" aria-label="主导航">
+        <button class="brand reset-button" id="home-button" type="button" aria-label="返回首页">
+          <span class="brand-mark" aria-hidden="true">M</span><span>MBTI 测试</span>
+        </button>
+        <button class="admin-link reset-button" id="admin-entry" type="button">管理员入口</button>
       </nav>
-
-      <section class="hero">
-        <div class="eyebrow">DISCOVER YOURSELF</div>
-        <h1>更了解自己，<br /><span>从一次认真作答开始。</span></h1>
-        <p class="lead">
-          我们正在准备一套清晰、轻松的 MBTI 性格测试。题目与计分规则即将加入，欢迎稍后回来探索你的性格偏好。
-        </p>
-        <div class="actions">
-          <button type="button" disabled>测试即将开放</button>
-          <a href="#dimensions">了解四个维度 <span aria-hidden="true">→</span></a>
+    </header>
+    <main>
+      <section class="view welcome-view is-active" id="welcome-view" aria-labelledby="welcome-title">
+        <div class="hero shell">
+          <div class="hero-copy">
+            <div class="eyebrow">DISCOVER YOURSELF</div>
+            <h1 id="welcome-title">更了解自己，<br /><span>从一次认真作答开始。</span></h1>
+            <p class="lead">通过 90 道二选一题目，了解你在能量、信息、决策与生活方式上的偏好。请按照真实的日常状态作答，而不是理想中的自己。</p>
+            <div class="hero-actions">
+              <button class="primary-button" id="start-button" type="button">开始测试</button>
+              <span class="duration">约需 8–12 分钟</span>
+            </div>
+          </div>
+          <aside class="hero-card" aria-label="测试说明">
+            <span class="hero-card-index">90</span>
+            <div><strong>道简洁题目</strong><p>每题选择更符合你的一个选项，所有题目回答后立即获得结果。</p></div>
+          </aside>
+        </div>
+        <div class="dimensions shell" aria-label="MBTI 四个维度">
+          <article><strong>E / I</strong><span>能量来源</span><small>外向 · 内向</small></article>
+          <article><strong>S / N</strong><span>信息获取</span><small>实感 · 直觉</small></article>
+          <article><strong>T / F</strong><span>决策方式</span><small>思考 · 情感</small></article>
+          <article><strong>J / P</strong><span>生活态度</span><small>判断 · 感知</small></article>
         </div>
       </section>
-
-      <section class="dimensions" id="dimensions" aria-label="MBTI 四个维度">
-        <article><strong>E / I</strong><span>能量来源</span><small>外向 · 内向</small></article>
-        <article><strong>S / N</strong><span>信息获取</span><small>实感 · 直觉</small></article>
-        <article><strong>T / F</strong><span>决策方式</span><small>思考 · 情感</small></article>
-        <article><strong>J / P</strong><span>生活态度</span><small>判断 · 感知</small></article>
+      <section class="view test-view" id="test-view" aria-labelledby="question-title">
+        <div class="test-shell">
+          <div class="progress-copy"><span id="progress-label">第 1 题 / 共 90 题</span><span id="progress-percent">1%</span></div>
+          <div class="progress-track" role="progressbar" aria-valuemin="1" aria-valuemax="90" aria-valuenow="1"><span id="progress-bar"></span></div>
+          <article class="question-card">
+            <span class="question-number" id="question-number">01</span>
+            <h2 id="question-title"></h2>
+            <div class="answer-list" id="answer-list"></div>
+          </article>
+          <div class="question-navigation">
+            <button class="secondary-button" id="previous-question" type="button">← 上一题</button>
+            <button class="text-button" id="next-question" type="button" hidden>下一题 →</button>
+          </div>
+        </div>
       </section>
-
-      <footer>
-        <span>© <span id="year"></span> MBTI 测试</span>
-        <span>这是非官方测试项目，仅供自我探索。</span>
-      </footer>
+      <section class="view result-view" id="result-view" aria-labelledby="result-heading">
+        <div class="result-card">
+          <span class="result-kicker">你的 MBTI 结果</span>
+          <h2 id="result-heading">完成测试</h2>
+          <div class="result-type" id="result-type" aria-live="polite"></div>
+          <p class="result-name" id="result-name"></p>
+          <button class="primary-button full-button" id="submit-result" type="button">提交结果</button>
+          <p class="submit-status" id="submit-status" aria-live="polite">提交后，管理员将能看到你的姓名和测试结果。</p>
+          <button class="text-button" id="review-answers" type="button">返回检查答案</button>
+        </div>
+      </section>
+      <section class="view admin-view" id="admin-view" aria-labelledby="admin-heading">
+        <div class="admin-shell">
+          <div class="admin-heading-row">
+            <div><span class="eyebrow">ADMIN CONSOLE</span><h1 id="admin-heading">测试结果管理</h1><p>查看全部已提交结果，按最新提交时间排序。</p></div>
+            <button class="secondary-button" id="admin-back" type="button">返回首页</button>
+          </div>
+          <section class="login-card" id="admin-login-panel">
+            <h2>管理员验证</h2>
+            <p>请输入管理员密码后查看已提交的测试结果。</p>
+            <form id="admin-login-form">
+              <label for="admin-password">管理员密码</label>
+              <input id="admin-password" name="password" type="password" inputmode="numeric" autocomplete="current-password" required />
+              <button class="primary-button full-button" type="submit">进入后台</button>
+              <p class="form-message" id="admin-login-message" aria-live="polite"></p>
+            </form>
+          </section>
+          <section class="dashboard" id="admin-dashboard" hidden>
+            <div class="dashboard-toolbar">
+              <div class="stat-card"><span>已提交总数</span><strong id="submission-count">0</strong></div>
+              <div class="toolbar-actions">
+                <button class="secondary-button" id="refresh-data" type="button">刷新</button>
+                <button class="secondary-button" id="copy-csv" type="button">复制 CSV</button>
+                <button class="primary-button" id="download-csv" type="button">下载 CSV</button>
+                <button class="text-button" id="admin-logout" type="button">退出</button>
+              </div>
+            </div>
+            <div class="table-status" id="table-status" aria-live="polite"></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th scope="col">提交时间</th><th scope="col">姓名</th><th scope="col">结果</th><th scope="col">对应解析</th></tr></thead>
+                <tbody id="results-body"></tbody>
+              </table>
+            </div>
+          </section>
+        </div>
+      </section>
     </main>
+    <footer class="site-footer shell">
+      <span>© <span id="year"></span> MBTI 测试</span>
+      <span>本测试仅供日常自我探索，不能替代专业心理测评。</span>
+    </footer>
+    <dialog class="name-dialog" id="name-dialog">
+      <form id="name-form" method="dialog">
+        <button class="dialog-close reset-button" id="dialog-close" type="button" aria-label="关闭">×</button>
+        <span class="eyebrow">BEFORE YOU START</span>
+        <h2>先告诉我们你的姓名</h2>
+        <p>姓名将与最终结果一同提交，请填写便于管理员识别的名字。</p>
+        <label for="participant-name">姓名</label>
+        <input id="participant-name" name="name" type="text" maxlength="30" autocomplete="name" placeholder="请输入姓名" required />
+        <p class="form-message" id="name-message" aria-live="polite"></p>
+        <button class="primary-button full-button" type="submit">进入测试</button>
+      </form>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="cloudbase-config.js"></script>
+    <script src="questions.js"></script>
     <script src="script.js"></script>
   </body>
 </html>

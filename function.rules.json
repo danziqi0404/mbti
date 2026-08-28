@@ -1,0 +1,8 @@
+{
+  "*": {
+    "invoke": false
+  },
+  "mbti-api": {
+    "invoke": "auth != null"
+  }
+}

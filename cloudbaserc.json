@@ -1,0 +1,35 @@
+{
+  "$schema": "https://static.cloudbase.net/cli/cloudbaserc.schema.json",
+  "envId": "mbti-test-d6gfle01q4ef77520",
+  "region": "ap-shanghai",
+  "functionRoot": "cloudfunctions",
+  "functions": [
+    {
+      "name": "mbti-api",
+      "description": "MBTI results submission and password-protected admin query API",
+      "runtime": "Nodejs20.19",
+      "handler": "index.main",
+      "timeout": 10,
+      "memorySize": 256,
+      "installDependency": true,
+      "envVariables": {
+        "ADMIN_PASSWORD": "{{env.ADMIN_PASSWORD}}"
+      }
+    },
+    {
+      "name": "mbti-http-api",
+      "description": "Public HTTP API for the GitHub Pages MBTI questionnaire",
+      "type": "HTTP",
+      "runtime": "Nodejs20.19",
+      "dir": "mbti-http-api",
+      "timeout": 10,
+      "memorySize": 256,
+      "installDependency": true,
+      "public": true,
+      "gatewayPath": "/mbti-api",
+      "envVariables": {
+        "ADMIN_PASSWORD": "{{env.ADMIN_PASSWORD}}"
+      }
+    }
+  ]
+}
