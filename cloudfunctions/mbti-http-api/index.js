@@ -8,7 +8,7 @@ const db = app.database();
 const submissions = db.collection("submissions");
 
 const ALLOWED_ORIGINS = new Set([
-  "https://keyzhao0118.github.io",
+  "https://danziqi0404.github.io",
   "http://127.0.0.1",
   "http://localhost"
 ]);
@@ -30,7 +30,7 @@ function corsHeaders(origin) {
   const normalized = normalizeOrigin(origin);
   const allowOrigin = ALLOWED_ORIGINS.has(normalized)
     ? origin
-    : "https://keyzhao0118.github.io";
+    : "https://danziqi0404.github.io";
   return {
     "Access-Control-Allow-Origin": allowOrigin,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
