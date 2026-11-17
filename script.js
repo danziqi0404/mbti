@@ -40,6 +40,8 @@ document.querySelector("#year").textContent = new Date().getFullYear();
 initializeBackend();
 restoreSession();
 bindEvents();
+if (window.location.hash === "#admin") showAdmin(false);
+else openTest();
 
 function initializeBackend() {
   const config = window.MBTI_CLOUDBASE_CONFIG;
@@ -70,17 +72,12 @@ function bindEvents() {
   document.querySelector("#admin-show-records").addEventListener("click", () => showAdminPanel(false));
   document.querySelector("#admin-show-stats").addEventListener("click", () => showAdminPanel(true));
 
-  document.querySelector("#start-button").addEventListener("click", () => {
-    nameMessage.textContent = "";
-    nameInput.value = "";
-    nameDialog.showModal();
-    window.setTimeout(() => nameInput.focus(), 50);
-  });
+  document.querySelector("#start-button").addEventListener("click", openTest);
   document.querySelector("#dialog-close").addEventListener("click", () => nameDialog.close());
   nameDialog.addEventListener("click", (event) => {
     if (event.target === nameDialog) nameDialog.close();
   });
-  document.querySelector("#name-form").addEventListener("submit", beginTest);
+  document.querySelector("#name-form").addEventListener("submit", confirmParticipantName);
   document.querySelector("#home-button").addEventListener("click", showHome);
   document.querySelector("#admin-back").addEventListener("click", showHome);
   document.querySelector("#admin-entry").addEventListener("click", showAdmin);
@@ -107,11 +104,21 @@ function bindEvents() {
   });
   window.addEventListener("hashchange", () => {
     if (window.location.hash === "#admin") showAdmin(false);
+    else if (document.querySelector("#admin-view").classList.contains("is-active")) openTest();
   });
   document.addEventListener("keydown", handleAnswerShortcut);
 }
 
-function beginTest(event) {
+function openTest() {
+  if (currentResult && answers.every(Boolean)) {
+    finishTest();
+    return;
+  }
+  showView("test");
+  renderQuestion();
+}
+
+function confirmParticipantName(event) {
   event.preventDefault();
   const cleanName = nameInput.value.trim().replace(/\s+/g, " ");
   if (!cleanName) {
@@ -125,14 +132,9 @@ function beginTest(event) {
   }
 
   participantName = cleanName;
-  answers = Array(QUESTIONS.length).fill(null);
-  currentQuestion = 0;
-  currentResult = "";
-  submitted = false;
   saveSession();
   nameDialog.close();
-  showView("test");
-  renderQuestion();
+  submitResult();
 }
 
 function renderQuestion() {
@@ -229,7 +231,8 @@ function finishTest() {
   }
   currentResult = calculateResult();
   document.querySelector("#result-type").textContent = currentResult;
-  document.querySelector("#result-name").textContent = `${participantName}，这是你的性格偏好组合`;
+  document.querySelector("#result-name").textContent = participantName
+    ? `${participantName}，这是你的性格偏好组合` : "这是你的性格偏好组合";
   submitButton.disabled = submitted;
   submitButton.textContent = submitted ? "已提交" : "提交结果";
   submitStatus.className = "submit-status";
@@ -263,6 +266,15 @@ async function submitResult() {
     return;
   }
 
+  if (!participantName) {
+    nameMessage.textContent = "";
+    nameInput.value = "";
+    nameDialog.showModal();
+    nameInput.focus();
+    return;
+  }
+
+  document.querySelector("#result-name").textContent = `${participantName}，这是你的性格偏好组合`;
   submitButton.disabled = true;
   submitButton.textContent = "正在提交…";
   submitStatus.className = "submit-status";
@@ -674,15 +686,9 @@ function restoreSession() {
     currentQuestion = Math.min(Math.max(Number(data.currentQuestion) || 0, 0), QUESTIONS.length - 1);
     currentResult = typeof data.currentResult === "string" ? data.currentResult : "";
     submitted = Boolean(data.submitted);
-    if (currentResult && answers.every(Boolean)) finishTest();
-    else if (participantName && answers.some(Boolean)) {
-      showView("test");
-      renderQuestion();
-    }
   } catch {
     sessionStorage.removeItem(SESSION_KEY);
   }
-  if (window.location.hash === "#admin") showAdmin(false);
 }
 
 function showToast(message) {
