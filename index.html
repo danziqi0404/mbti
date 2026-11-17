@@ -122,13 +122,13 @@
     <dialog class="name-dialog" id="name-dialog">
       <form id="name-form" method="dialog">
         <button class="dialog-close reset-button" id="dialog-close" type="button" aria-label="关闭">×</button>
-        <span class="eyebrow">SUBMIT RESULT</span>
-        <h2>填写姓名并提交</h2>
+        <span class="eyebrow">BEFORE YOU START</span>
+        <h2>先告诉我们你的姓名</h2>
         <p>姓名将与最终结果一同提交，请填写便于管理员识别的名字。</p>
         <label for="participant-name">姓名</label>
         <input id="participant-name" name="name" type="text" maxlength="30" autocomplete="name" placeholder="请输入姓名" required />
         <p class="form-message" id="name-message" aria-live="polite"></p>
-        <button class="primary-button full-button" type="submit">确认提交</button>
+        <button class="primary-button full-button" type="submit">进入测试</button>
       </form>
     </dialog>
     <dialog class="description-dialog" id="description-dialog" aria-labelledby="description-dialog-title">
@@ -148,6 +148,6 @@
     <script src="cloudbase-config.js"></script>
     <script src="questions.js"></script>
     <script src="descriptions.js"></script>
-    <script src="script.js"></script>
+    <script src="script.js?v=welcome-name"></script>
   </body>
 </html>
