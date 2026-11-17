@@ -92,6 +92,11 @@
                 <button class="text-button" id="admin-logout" type="button">退出</button>
               </div>
             </div>
+            <nav class="toolbar-actions mbti-nav" aria-label="后台页面">
+              <button type="button" class="secondary-button" id="admin-show-records" aria-pressed="true">提交记录</button>
+              <button type="button" class="secondary-button" id="admin-show-stats" aria-pressed="false">人格统计</button>
+            </nav>
+            <div id="admin-records">
             <div class="table-status" id="table-status" aria-live="polite"></div>
             <div class="table-wrap">
               <table>
@@ -99,6 +104,24 @@
                 <tbody id="results-body"></tbody>
               </table>
             </div>
+            </div>
+            <section id="admin-stats" aria-labelledby="admin-stats-title" hidden>
+              <h2 id="admin-stats-title" tabindex="-1">人格统计</h2>
+              <p>按有效测试提交统计。公开链接的提交也会计入；系统没有员工编号，无法区分同名员工，复测可能重复计数。</p>
+              <p id="admin-stats-summary" role="status"></p>
+              <div class="mbti-chart" id="admin-stats-chart" aria-label="16 种人格的提交数量和名单"></div>
+              <section class="mbti-teaching" aria-labelledby="teaching-title">
+                <h3 id="teaching-title">力翰科学老师｜试讲观察参考</h3>
+                <p>MBTI 可以帮助了解团队偏好，不能判断谁更适合任教。建议给每位老师相同的实验主题、材料和试讲时间，根据实际表现反馈。</p>
+                <ul>
+                  <li><strong>科学解释：</strong>概念和结论准确，能用适合学生年龄的例子讲清原因。</li>
+                  <li><strong>探究引导：</strong>让学生先预测、再观察，并用证据解释结果。</li>
+                  <li><strong>课堂安全：</strong>事先说明风险和操作规则，能及时制止不安全操作。</li>
+                  <li><strong>课堂互动：</strong>用提问检查理解，学生有疑惑时能换一种方式说明。</li>
+                </ul>
+                <p><a href="https://www.themyersbriggs.com/en-us/support/mbti-facts" target="_blank" rel="noopener noreferrer">了解 MBTI 的适用范围</a></p>
+              </section>
+            </section>
           </section>
         </div>
       </section>

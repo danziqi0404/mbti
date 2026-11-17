@@ -30,6 +30,9 @@ let submitted = false;
 let backendConfigured = false;
 let adminPassword = "";
 let submissionRows = [];
+let submissionsTruncated = false;
+let adminRequest = 0;
+let statsState = "";
 let autoAdvanceTimer = null;
 let toastTimer = null;
 
@@ -64,6 +67,9 @@ async function callMbtiApi(data) {
 }
 
 function bindEvents() {
+  document.querySelector("#admin-show-records").addEventListener("click", () => showAdminPanel(false));
+  document.querySelector("#admin-show-stats").addEventListener("click", () => showAdminPanel(true));
+
   document.querySelector("#start-button").addEventListener("click", () => {
     nameMessage.textContent = "";
     nameInput.value = "";
@@ -319,6 +325,9 @@ async function adminLogin(event) {
     const result = await callMbtiApi({ action: "list", password });
     adminPassword = password;
     submissionRows = Array.isArray(result.rows) ? result.rows : [];
+    submissionsTruncated = result.truncated === true;
+    statsState = "";
+    renderAdminStats();
     passwordInput.value = "";
     setAdminState(true);
     renderSubmissionTable();
@@ -341,8 +350,13 @@ async function adminLogin(event) {
 }
 
 async function adminLogout() {
+  adminRequest += 1;
   adminPassword = "";
   submissionRows = [];
+  submissionsTruncated = false;
+  statsState = "";
+  renderAdminStats();
+  showAdminPanel(false);
   resultsBody.replaceChildren();
   setAdminState(false);
 }
@@ -358,19 +372,108 @@ function setAdminState(isAdmin) {
 
 async function loadSubmissions() {
   if (!backendConfigured || !adminPassword) return;
-  tableStatus.textContent = "正在加载数据…";
+  const request = ++adminRequest;
+  statsState = "正在加载数据…";
+  renderAdminStats();
+  tableStatus.textContent = statsState;
   resultsBody.replaceChildren();
   try {
     const result = await callMbtiApi({ action: "list", password: adminPassword });
+    if (request !== adminRequest || !adminPassword) return;
     submissionRows = Array.isArray(result.rows) ? result.rows : [];
+    submissionsTruncated = result.truncated === true;
+    statsState = "";
+    renderAdminStats();
     renderSubmissionTable();
     tableStatus.textContent = submissionRows.length
       ? `已按提交时间从新到旧展示 ${submissionRows.length} 条记录。`
       : "目前还没有已提交的测试结果。";
   } catch (error) {
+    if (request !== adminRequest || !adminPassword) return;
+    statsState = "刷新失败，以下为上次成功加载的数据。";
+    renderAdminStats();
     console.error("后台数据加载失败：", error);
     tableStatus.textContent = "数据加载失败，请检查网络、云函数和 CloudBase 配置。";
   }
+}
+
+function showAdminPanel(showStats) {
+  if (showStats && !adminPassword) return;
+  document.querySelector("#admin-records").hidden = showStats;
+  document.querySelector("#admin-stats").hidden = !showStats;
+  document.querySelector("#admin-show-records").setAttribute("aria-pressed", String(!showStats));
+  document.querySelector("#admin-show-stats").setAttribute("aria-pressed", String(showStats));
+  if (showStats) document.querySelector("#admin-stats-title").focus();
+}
+
+function groupMbtiSubmissions(rows) {
+  const groups = new Map();
+  for (const e of "EI") for (const s of "SN") for (const t of "TF") for (const j of "JP") {
+    groups.set(e + s + t + j, []);
+  }
+  for (const row of rows) {
+    const group = groups.get(row?.result);
+    if (group) group.push(typeof row.name === "string" && row.name.trim() ? row.name.trim() : "未填写姓名");
+  }
+  return [...groups].sort((a, b) => b[1].length - a[1].length || a[0].localeCompare(b[0]));
+}
+
+function renderAdminStats() {
+  const chart = document.querySelector("#admin-stats-chart");
+  const summary = document.querySelector("#admin-stats-summary");
+  chart.replaceChildren();
+  summary.textContent = "";
+  if (!adminPassword) return;
+  if (statsState === "正在加载数据…") {
+    summary.textContent = statsState;
+    return;
+  }
+  const groups = groupMbtiSubmissions(submissionRows);
+  const total = groups.reduce((sum, [, names]) => sum + names.length, 0);
+  const represented = groups.filter(([, names]) => names.length).length;
+  summary.textContent = [
+    statsState,
+    `有效提交 ${total} 条，覆盖 ${represented} / 16 种类型。`,
+    submissionsTruncated ? "结果已达到接口返回上限，统计仅包含已加载的记录。" : ""
+  ].filter(Boolean).join(" ");
+  const max = groups[0][1].length || 1;
+  const items = document.createDocumentFragment();
+  for (const [type, names] of groups) {
+    const card = document.createElement("article");
+    card.className = "mbti-type-card";
+    const title = document.createElement("h3");
+    title.textContent = type;
+    const count = document.createElement("p");
+    count.textContent = `${names.length} 条 · ${total ? new Intl.NumberFormat("zh-CN", { style: "percent", maximumFractionDigits: 1 }).format(names.length / total) : "0%"}`;
+    const bar = document.createElement("progress");
+    bar.max = max;
+    bar.value = names.length;
+    bar.setAttribute("aria-hidden", "true");
+    card.append(title, count, bar);
+    if (names.length) {
+      const details = document.createElement("details");
+      const label = document.createElement("summary");
+      label.textContent = "查看名单";
+      const list = document.createElement("ul");
+      details.append(label);
+      details.addEventListener("toggle", () => {
+        if (!details.open || list.childElementCount) return;
+        for (const name of names) {
+          const item = document.createElement("li");
+          item.textContent = name;
+          list.append(item);
+        }
+        details.append(list);
+      });
+      card.append(details);
+    } else {
+      const empty = document.createElement("p");
+      empty.textContent = "暂无提交";
+      card.append(empty);
+    }
+    items.append(card);
+  }
+  chart.append(items);
 }
 
 function renderSubmissionTable() {

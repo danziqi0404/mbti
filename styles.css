@@ -193,3 +193,16 @@ input:focus { border-color: var(--forest); box-shadow: 0 0 0 3px rgba(54, 95, 81
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+
+.mbti-nav { margin: 1rem 0; flex-wrap: wrap; }
+.mbti-nav button[aria-pressed="true"] { background: #183d38; color: #fff; }
+#admin-stats-title { scroll-margin-top: 5rem; }
+#admin-stats-summary { font-weight: 650; }
+.mbti-chart { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: .85rem; }
+.mbti-type-card, .mbti-teaching { background: #fff; border: 1px solid #d2e0da; border-radius: .8rem; padding: 1rem; min-width: 0; }
+.mbti-type-card h3, .mbti-type-card p { margin: 0 0 .4rem; }
+.mbti-type-card progress { width: 100%; accent-color: #26735f; }
+.mbti-type-card summary { cursor: pointer; }
+.mbti-type-card ul { max-height: 16rem; overflow: auto; padding-inline-start: 1.4rem; overflow-wrap: anywhere; }
+.mbti-teaching { margin-top: 1.25rem; }
+.mbti-teaching ul { padding-inline-start: 1.4rem; }
